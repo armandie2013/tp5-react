@@ -45,12 +45,16 @@ export default function MovieDetail() {
   return (
     <div className="max-w-3xl mx-auto p-4">
       {movie.imagen && (
-        <img
-          src={movie.imagen}
-          alt={movie.titulo}
-          className="w-full h-64 object-cover rounded mb-4"
-        />
-      )}
+  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg mb-4 flex items-center justify-center">
+    <img
+      src={movie.imagen}
+      alt={movie.titulo}
+      className="w-full h-auto max-h-[55vh] object-contain rounded-lg"
+      loading="lazy"
+      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+    />
+  </div>
+)}
       <h1 className="text-2xl font-bold mb-2">{movie.titulo}</h1>
       <p className="text-slate-700 dark:text-slate-300 mb-1">{movie.genero}</p>
       <p className="text-slate-600 dark:text-slate-400 mb-4">
