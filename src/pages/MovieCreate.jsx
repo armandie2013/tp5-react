@@ -3,6 +3,7 @@ import { Movies } from "../services/movies";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { safeImage } from "../utils/images";
+import { validateMovie, fe } from "../utils/validation";
 
 export default function MovieCreate() {
   const navigate = useNavigate();
@@ -13,8 +14,9 @@ export default function MovieCreate() {
     genero: "",
     descripcion: "",
     imagen: "",
-    rating: 0,
+    rating: "",
   });
+  const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   const previewSrc = useMemo(() => {
@@ -27,32 +29,21 @@ export default function MovieCreate() {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  const validate = () => {
-    if (!form.titulo.trim()) {
-      toast.warn("El título es obligatorio");
-      return false;
-    }
-    if (form.year && !/^\d{4}$/.test(String(form.year))) {
-      toast.warn("El año debe tener 4 dígitos (ej: 2023)");
-      return false;
-    }
-    if (Number(form.rating) < 0 || Number(form.rating) > 10) {
-      toast.warn("El rating debe estar entre 0 y 10");
-      return false;
-    }
-    return true;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+
+    const { isValid, errors: errs, data } = validateMovie(form);
+    setErrors(errs);
+
+    if (!isValid) {
+      const first = Object.values(errs)[0];
+      toast.warn(first || "Revisá los campos");
+      return;
+    }
 
     try {
       setSubmitting(true);
-      await Movies.create({
-        ...form,
-        year: form.year || "",
-      });
+      await Movies.create({ ...data, year: data.year || "" });
       toast.success("Película creada");
       navigate("/items");
     } catch {
@@ -61,6 +52,11 @@ export default function MovieCreate() {
       setSubmitting(false);
     }
   };
+
+  const base =
+    "w-full px-3 py-2 rounded bg-white text-slate-800 border focus:outline-none focus:ring-2 dark:bg-slate-800 dark:text-white";
+  const ok = "border-slate-300 focus:ring-blue-500 focus:border-blue-500 dark:border-slate-600";
+  const bad = "border-red-500 focus:ring-red-500 focus:border-red-500";
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-4 space-y-4">
@@ -94,9 +90,12 @@ export default function MovieCreate() {
           placeholder="Ej: Interstellar"
           value={form.titulo}
           onChange={handleChange}
-          className="w-full px-3 py-2 rounded bg-white text-slate-800 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white dark:border-slate-600"
+          className={`${base} ${fe(errors, "titulo") ? bad : ok}`}
           required
         />
+        {fe(errors, "titulo") && (
+          <p className="mt-1 text-xs text-red-600">{fe(errors, "titulo")}</p>
+        )}
       </div>
 
       {/* Director */}
@@ -107,8 +106,11 @@ export default function MovieCreate() {
           placeholder="Ej: Christopher Nolan"
           value={form.director}
           onChange={handleChange}
-          className="w-full px-3 py-2 rounded bg-white text-slate-800 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white dark:border-slate-600"
+          className={`${base} ${fe(errors, "director") ? bad : ok}`}
         />
+        {fe(errors, "director") && (
+          <p className="mt-1 text-xs text-red-600">{fe(errors, "director")}</p>
+        )}
       </div>
 
       {/* Año y Género */}
@@ -120,11 +122,14 @@ export default function MovieCreate() {
             placeholder="Ej: 2023"
             value={form.year}
             onChange={handleChange}
-            className="w-full px-3 py-2 rounded bg-white text-slate-800 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white dark:border-slate-600"
+            className={`${base} ${fe(errors, "year") ? bad : ok}`}
             inputMode="numeric"
             pattern="\d{4}"
             title="Cuatro dígitos, ej: 2023"
           />
+          {fe(errors, "year") && (
+            <p className="mt-1 text-xs text-red-600">{fe(errors, "year")}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">Género</label>
@@ -133,8 +138,11 @@ export default function MovieCreate() {
             placeholder="Ej: Ciencia ficción"
             value={form.genero}
             onChange={handleChange}
-            className="w-full px-3 py-2 rounded bg-white text-slate-800 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white dark:border-slate-600"
+            className={`${base} ${fe(errors, "genero") ? bad : ok}`}
           />
+          {fe(errors, "genero") && (
+            <p className="mt-1 text-xs text-red-600">{fe(errors, "genero")}</p>
+          )}
         </div>
       </div>
 
@@ -143,14 +151,14 @@ export default function MovieCreate() {
         <label className="block text-sm font-medium mb-1">URL de la imagen</label>
         <input
           name="imagen"
-          placeholder="URL https"
+          placeholder="URL https (.jpg, .jpeg, .png, .webp)"
           value={form.imagen}
           onChange={handleChange}
-          className="w-full px-3 py-2 rounded bg-white text-slate-800 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white dark:border-slate-600"
+          className={`${base} ${fe(errors, "imagen") ? bad : ok}`}
         />
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-          Se muestra una vista previa automática si la URL es válida.
-        </p>
+        {fe(errors, "imagen") && (
+          <p className="mt-1 text-xs text-red-600">{fe(errors, "imagen")}</p>
+        )}
       </div>
 
       {/* Descripción */}
@@ -162,8 +170,11 @@ export default function MovieCreate() {
           value={form.descripcion}
           onChange={handleChange}
           rows={4}
-          className="w-full px-3 py-2 rounded bg-white text-slate-800 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white dark:border-slate-600"
+          className={`${base} ${fe(errors, "descripcion") ? bad : ok}`}
         />
+        {fe(errors, "descripcion") && (
+          <p className="mt-1 text-xs text-red-600">{fe(errors, "descripcion")}</p>
+        )}
       </div>
 
       {/* Rating */}
@@ -178,8 +189,11 @@ export default function MovieCreate() {
           placeholder="Ej: 8.5"
           value={form.rating}
           onChange={handleChange}
-          className="w-full px-3 py-2 rounded bg-white text-slate-800 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white dark:border-slate-600"
+          className={`${base} ${fe(errors, "rating") ? bad : ok}`}
         />
+        {fe(errors, "rating") && (
+          <p className="mt-1 text-xs text-red-600">{fe(errors, "rating")}</p>
+        )}
       </div>
 
       <div className="pt-2">
