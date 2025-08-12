@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Movies } from "../services/movies";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { safeImage } from "../utils/images"; // 👈 NUEVO
 
 export default function MovieDetail() {
   const { id } = useParams();
@@ -45,20 +46,27 @@ export default function MovieDetail() {
   return (
     <div className="max-w-3xl mx-auto p-4">
       {movie.imagen && (
-  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg mb-4 flex items-center justify-center">
-    <img
-      src={movie.imagen}
-      alt={movie.titulo}
-      className="w-full h-auto max-h-[55vh] object-contain rounded-lg"
-      loading="lazy"
-      onError={(e) => { e.currentTarget.style.display = 'none'; }}
-    />
-  </div>
-)}
+        <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg mb-4 flex items-center justify-center">
+          <img
+            src={safeImage(movie.imagen)}                 // 👈 PROXY SEGURO
+            alt={movie.titulo}
+            className="w-full h-auto max-h-[55vh] object-contain rounded-lg"
+            loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src = "https://via.placeholder.com/1200x800?text=Sin+imagen";
+              e.currentTarget.className =
+                "w-full h-auto max-h-[55vh] object-contain rounded-lg opacity-70";
+            }}
+          />
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold mb-2">{movie.titulo}</h1>
       <p className="text-slate-700 dark:text-slate-300 mb-1">{movie.genero}</p>
       <p className="text-slate-600 dark:text-slate-400 mb-4">
-        {movie.year ?? movie.año}   {/* <- compat */}
+        {movie.year ?? movie.año}
       </p>
       <p className="mb-6">{movie.descripcion}</p>
 

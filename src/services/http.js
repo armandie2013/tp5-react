@@ -1,13 +1,21 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // apunta a /peliculas
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 12000,
   headers: { "Content-Type": "application/json" },
+  // ✅ tratamos 404 como respuesta válida (no error)
+  validateStatus: (status) => (status >= 200 && status < 300) || status === 404,
 });
 
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    // Si la API devolvió 404, lo mapeamos a lista vacía
+    if (res.status === 404) {
+      return { ...res, data: [] };
+    }
+    return res;
+  },
   (err) => {
     const message = err.response?.data?.message || err.message || "Error de red";
     return Promise.reject(new Error(message));
