@@ -80,7 +80,7 @@ export default function MovieCreate() {
         </div>
       )}
 
-      {/* Título */}
+      {/* Titulo */}
       <div>
         <label className="block text-sm font-medium mb-1">
           Título <span className="text-red-600">*</span>
@@ -113,7 +113,7 @@ export default function MovieCreate() {
         )}
       </div>
 
-      {/* Año y Género */}
+      {/* Año y Genero */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Año</label>
@@ -161,7 +161,7 @@ export default function MovieCreate() {
         )}
       </div>
 
-      {/* Descripción */}
+      {/* Descripcion */}
       <div>
         <label className="block text-sm font-medium mb-1">Descripción</label>
         <textarea
