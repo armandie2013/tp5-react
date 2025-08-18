@@ -125,6 +125,7 @@ export default function Navbar() {
           <nav className="flex flex-col gap-1">
             <NavLink
               to="/items"
+              end
               onClick={close}
               className={({ isActive }) =>
                 `w-full ${linkBase} ${isActive ? linkActive : ""}`
@@ -134,6 +135,7 @@ export default function Navbar() {
             </NavLink>
             <NavLink
               to="/items/create"
+              end
               onClick={close}
               className={({ isActive }) =>
                 `w-full ${linkBase} ${isActive ? linkActive : ""}`
