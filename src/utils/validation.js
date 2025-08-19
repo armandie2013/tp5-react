@@ -26,7 +26,7 @@ export function validateMovie(input) {
 
   const errors = {};
 
-  // Título (obligatorio)
+  // Titulo (obligatorio)
   if (isEmpty(data.titulo)) {
     errors.titulo = "El título es obligatorio";
   } else {
@@ -34,13 +34,13 @@ export function validateMovie(input) {
     else if (data.titulo.length > 150) errors.titulo = "Máximo 150 caracteres";
   }
 
-  // Director (opcional)
+  // Director (opcional), pero si se ingresa un titulo tiene que tener 3 como minimo y 100 como maximo
   if (!isEmpty(data.director)) {
     if (data.director.length < 3) errors.director = "Mínimo 3 caracteres";
     else if (data.director.length > 100) errors.director = "Máximo 100 caracteres";
   }
 
-  // Año (opcional/obligatorio: si lo querés obligatorio, descomentá)
+  // Año (opcional/obligatorio)
   if (!isEmpty(data.year)) {
     if (!/^\d{4}$/.test(data.year)) {
       errors.year = "Debe tener 4 dígitos (ej: 2023)";
@@ -50,19 +50,18 @@ export function validateMovie(input) {
         errors.year = `Entre ${YEAR_MIN} y ${YEAR_MAX}`;
       }
     }
+  }  
+  else {
+    errors.year = "El año es obligatorio";
   }
-  // // Si querés hacerlo obligatorio:
-  // else {
-  //   errors.year = "El año es obligatorio";
-  // }
 
-  // Género (obligatorio)
+  // Genero (obligatorio)
   if (isEmpty(data.genero)) {
     errors.genero = "El género es obligatorio";
   } else {
     if (data.genero.length < 3) errors.genero = "Mínimo 3 caracteres";
     else if (data.genero.length > 150) errors.genero = "Máximo 150 caracteres";
-    // Si querés restringir a una lista fija, validalo acá
+    
   }
 
   // Imagen (opcional)
@@ -87,7 +86,7 @@ export function validateMovie(input) {
     data.rating = Math.round(r * 10) / 10;
   }
 
-  // Devolvemos flags útiles
+  // Devolvemos flags utiles
   const isValid = Object.keys(errors).length === 0;
   return { isValid, errors, data };
 }

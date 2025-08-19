@@ -119,6 +119,7 @@ export default function MovieCreate() {
           <label className="block text-sm font-medium mb-1">Año</label>
           <input
             name="year"
+            type="number"
             placeholder="Ej: 2023"
             value={form.year}
             onChange={handleChange}
