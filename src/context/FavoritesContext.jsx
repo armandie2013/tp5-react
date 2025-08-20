@@ -27,11 +27,11 @@ export function FavoritesProvider({ children }) {
 
   const eliminarTodos = () => setFavoritos([]);
 
-  const isFavorito = (id) => favoritos.some((m) => m.id === id); // 👈 NUEVO
+  const isFavorito = (id) => favoritos.some((m) => m.id === id); //
 
   return (
     <FavoritesContext.Provider
-      value={{ favoritos, agregarFavorito, eliminarFavorito, eliminarTodos, isFavorito }} // 👈
+      value={{ favoritos, agregarFavorito, eliminarFavorito, eliminarTodos, isFavorito }}
     >
       {children}
     </FavoritesContext.Provider>
